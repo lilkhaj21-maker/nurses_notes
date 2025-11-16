@@ -1,0 +1,42 @@
+name: Build and Deploy Flutter Web
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository
+      - uses: actions/checkout@v3
+
+      # 2. Set up Flutter 3.38.1 (Dart 3.7)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.1'
+
+      # 3. Enable web support
+      - run: flutter config --enable-web
+
+      # 4. Get dependencies
+      - run: flutter pub get
+
+      # 5. Analyze the code
+      - run: flutter analyze
+
+      # 6. Build the web app
+      - run: flutter build web --release
+
+      # 7. Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/web
+          # optional: force overwrite any previous deployment
+          force_orphan: true
