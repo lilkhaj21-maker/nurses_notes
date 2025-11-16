@@ -1,29 +1,32 @@
-name: Flutter Web CI/CD
+name: Flutter Web CI
 
 on:
   push:
-    branches:
-      - main  # or your default branch
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-  build-web:
+  build_web:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 
-      - uses: subosito/flutter-action@v2
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0' # match your Flutter SDK
+          flutter-version: '3.38.1'
+
+      - run: flutter config --enable-web
 
       - run: flutter pub get
 
+      - run: flutter analyze
+
       - run: flutter build web --release
 
-      # If deploying to GitHub Pages
-      - uses: peaceiris/actions-gh-pages@v3
+      - uses: actions/upload-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/web
+          name: web_build
+          path: build/web
