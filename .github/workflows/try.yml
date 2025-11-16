@@ -1,0 +1,47 @@
+name: Flutter Web Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Set up Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.4'  # Use a Flutter version with Dart >= 3.3
+
+      # 3. Enable Flutter web
+      - name: Enable Flutter Web
+        run: flutter config --enable-web
+
+      # 4. Install dependencies
+      - name: Get dependencies
+        run: flutter pub get
+
+      # 5. Run tests (optional)
+      #- name: Run tests
+      #  run: flutter test
+
+      # 6. Build web
+      - name: Build Flutter Web
+        run: flutter build web --release
+
+      # 7. Upload artifact (optional, if you want to download the build)
+      - name: Upload web build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: flutter-web-build
+          path: build/web
